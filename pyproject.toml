@@ -23,7 +23,9 @@ dev-dependencies = [
     "pytest>=8.3.2",
     "tox>=4.18.0",
     "hypothesis>=6.111.2",
+    "pip>=24.2",
 ]
+compile-bytecode = true
 
 [project.scripts]
 "samrefiner" = "samrefiner.__main__:main"
