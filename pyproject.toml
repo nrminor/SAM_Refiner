@@ -2,11 +2,33 @@
 name = "samrefiner"
 version = "1.4.1"
 description = "A program for gathering variant information from mapped reads in a SAM formated files"
-author = "Devon A. Gregory"
-email = [{ name = "Devon A. Gregory", email = "gregoryde@missouri.edu" }]
-readme = "README.md"
+authors = [
+    { name = "Devon A. Gregory", email = "gregoryde@missouri.edu" },
+    { name = "Nicholas R. Minor", email = "nrminor@wisc.edu" },
+    { name = "William K. Gardner", email = "wkgardner@wisc.edu" },
+]
+maintainers = [
+    { name = "Nicholas R. Minor", email = "nrminor@wisc.edu" },
+    { name = "William K. Gardner", email = "wkgardner@wisc.edu" },
+]
+readme = { file = "README.md", content-type = "text/markdown" }
 license = "GPL-3.0"
 requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = []
 
 [build-system]
