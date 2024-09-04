@@ -1,56 +1,65 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
 import itertools
 import os
 from multiprocessing import Pool
+from typing import TYPE_CHECKING, Union
 
-from . import chimera_removal as chim
-from . import cli, utils
-from . import sam_parsing as sam
+from samrefiner import chimera_removal as chimera
+from samrefiner import cli, utils
+from samrefiner import sam_parsing as sam
+
+if TYPE_CHECKING:
+    import argparse
 
 
-def main():
+def run(settings: Union[argparse.Namespace, utils.RunSettings]) -> None:  # noqa: UP007
     """
-    Main functional logic
-    Calls functions to get argument values, then as relevant, get reference, process sam files, perform chimera removal and collect sample's
-    """
-    args = cli.arg_parser()  # getting command line arguments
+    Handle the flow of data through samrefiner's functions, handling cases where a
+    reference may not have been provided.
 
-    if args.ref:
-        ref = cli.get_ref(args)  # get the reference ID and sequence from the FASTA file
+    To control the run and supply inputs, either use the samrefiner command line
+    interface or instantiate a RunSettings first.
+    """
+
+    if settings.ref:
+        ref = utils.get_ref(
+            settings,
+        )  # get the reference ID and sequence from the FASTA file
         if ref[1] == "":
             print(
-                "Reference not recognized as a Fasta or Genebank format, skipping SAM parsing",
+                "Reference not recognized as a Fasta or Genbank format, skipping SAM parsing",
             )
         else:
             # collect SAM files to process, either from the arguments or the working directory
             SAMs = []
             try:
-                args.Sam_files[0]
+                settings.Sam_files[0]
             except:
                 for file in os.listdir(os.getcwd()):
                     if (file.lower()).endswith(".sam"):
                         SAMs.append(file)
             else:
-                for files in args.Sam_files:
+                for files in settings.Sam_files:
                     for file in files:
                         if os.path.isfile(file):
                             SAMs.append(file)
                         else:
                             print(f"Can't find {file}, skipping")
 
-            args.ref = ""
+            settings.ref = ""
             if ref[2] == "fasta":
-                with Pool(processes=args.mp) as pool:
+                with Pool(processes=settings.mp) as pool:
                     pool.starmap(
                         sam.fa_sam_parse,
-                        zip(itertools.repeat(args), itertools.repeat(ref), SAMs),
+                        zip(itertools.repeat(settings), itertools.repeat(ref), SAMs),
                     )
             elif ref[2] == "gb":
-                with Pool(processes=args.mp) as pool:
+                with Pool(processes=settings.mp) as pool:
                     pool.starmap(
                         sam.gb_sam_parse,
-                        zip(itertools.repeat(args), itertools.repeat(ref), SAMs),
+                        zip(itertools.repeat(settings), itertools.repeat(ref), SAMs),
                     )
             print("End Sam Parsing Output")
     else:
@@ -58,18 +67,36 @@ def main():
 
     seq_files = []
     # Begin chimera removal if enabled
-    if args.chim_rm == 1 or args.deconv == 1:
+    if settings.chim_rm == 1 or settings.deconv == 1:
         for file in os.listdir(os.getcwd()):
             if file.endswith(
                 "_seqs.tsv",
             ):  # get unique sequence files for chimera removal
                 seq_files.append(file[0:-16])
-        with Pool(processes=args.mp) as pool:
-            pool.starmap(chim.chim_process, zip(itertools.repeat(args), seq_files))
+        with Pool(processes=settings.mp) as pool:
+            pool.starmap(
+                chimera.chim_process,
+                zip(itertools.repeat(settings), seq_files),
+            )
 
     # begin collection of sample outputs
-    if args.collect == 1:
-        utils.collection(args)
+    if settings.collect == 1:
+        utils.collection(settings)
+
+
+def main() -> None:
+    """
+    Main functional logic
+    Calls functions to get argument values, then as relevant, get reference, process sam
+    files, perform chimera removal and collect sample's output files.
+    """
+    # get command line argements if running as an executable and parse them into a
+    # settings instance
+    args = cli.arg_parser()
+    settings = cli.args_to_settings(args)
+
+    # run the workflow
+    run(settings)
 
 
 if __name__ == "__main__":

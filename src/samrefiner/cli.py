@@ -1,7 +1,15 @@
+from __future__ import annotations
+
 import argparse
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from io import TextIOWrapper
+    from pathlib import Path
 
 
-def arg_parser():
+def arg_parser() -> argparse.Namespace:
     """
     Called to get the arguments passed by the command line and process them
     Functionality:
@@ -301,3 +309,52 @@ def arg_parser():
         args.autopass = 0.3
 
     return args
+
+
+@dataclass
+class RunSettings:
+    """
+    A dataclass container for all command line arguments to be used in library mode.
+    """
+
+    ref: Union[str, Path, TextIOWrapper, None] = None  # noqa: UP007
+    Sam_files: Union[str, Path, list[str]]  # noqa: UP007
+    use_count: int = 1
+    min_cout: int = 10
+    min_samp_abund: float = 0.01
+    min_col_abund: float = 0.01
+    ntabund: float = 0.001
+    ntcover: int = 5
+    max_dist: int = 40
+    max_covar: int = 8
+    covar_tile_coverage: int = 1
+    AAreport: int = 1
+    AAcodonasMNP: int = 1
+    AAcentered: int = 0
+    chim_in_abund: float = 0.001
+    alpha: float = 1.2
+    foldab: float = 1.8
+    redist: float = 1
+    max_cycles: int = 100
+    beta: float = 1.0
+    autopass: float = 0.3
+    colID: str = ""  # noqa: N815
+    collect: int = 1
+    read: int = 0
+    nt_call: int = 1
+    ntvar: int = 0
+    indel: int = 1
+    seq: int = 1
+    covar: int = 1
+    pass_out: int = 0
+    chim_rm: int = 1
+    deconv: int = 1
+    wgs: int = 0
+    mp: int = 3
+
+
+def args_to_settings(args: argparse.Namespace) -> RunSettings:
+    """
+    Create an instance of RunSettings using values from an argparse.Namespace.
+    """
+    return RunSettings(**vars(args))
