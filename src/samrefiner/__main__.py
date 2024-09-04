@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import argparse
 
 
-def run(settings: Union[argparse.Namespace, utils.RunSettings]) -> None:  # noqa: UP007
+def run_with_settings(settings: Union[argparse.Namespace, utils.RunSettings]) -> None:  # noqa: UP007
     """
     Handle the flow of data through samrefiner's functions, handling cases where a
     reference may not have been provided.
@@ -96,7 +96,7 @@ def main() -> None:
     settings = cli.args_to_settings(args)
 
     # run the workflow
-    run(settings)
+    run_with_settings(settings)
 
 
 if __name__ == "__main__":
