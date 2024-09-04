@@ -1,4 +1,8 @@
-include SAM_Refiner.py
+include src/samrefiner/__main__.py
+include src/samrefiner/cli.py
+include src/samrefiner/sam_parsing.py
+include src/samrefiner/chimera_removal.py
+include src/samrefiner/utils.py
 include setup.py
 include README.md
 include LICENSE
