@@ -318,9 +318,9 @@ class RunSettings:
     """
 
     ref: Union[str, Path, TextIOWrapper, None] = None  # noqa: UP007
-    Sam_files: Union[str, Path, list[str]]  # noqa: UP007
+    Sam_files: Union[str, Path, list[str], None] = None  # noqa: UP007
     use_count: int = 1
-    min_cout: int = 10
+    min_count: int = 10
     min_samp_abund: float = 0.01
     min_col_abund: float = 0.01
     ntabund: float = 0.001
